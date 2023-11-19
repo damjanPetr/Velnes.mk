@@ -1,10 +1,26 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
+import Calendar from "./pages/Calendar";
+import Service from "./pages/Service";
+import Products from "./pages/Products";
+import Customers from "./pages/Customers";
+import Marketing from "./pages/Marketing";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    children: [
+      { path: "calendar", element: <Calendar /> },
+      { path: "service", element: <Service /> },
+      { path: "products", element: <Products /> },
+      { path: "customers", element: <Customers /> },
+      { path: "marketing", element: <Marketing /> },
+      { path: "reports", element: <Reports /> },
+      { path: "settings", element: <Settings /> },
+    ],
   },
 ]);
 export default router;
