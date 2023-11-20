@@ -1,88 +1,112 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function Sidebar() {
   return (
-    <div className="flex flex-none flex-col   gap-[5px] bg-denum p-[5px]">
-      <div className="rounded-lg p-4 fcen ">
-        <Link to="">
+    <div className="flex flex-none flex-col   gap-[5px] bg-denum p-[5px] ">
+      <NavLink
+        to=""
+        className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+      >
+        <div>
           <img
             className="h-[25px] w-[26px] "
             src="icons/navigation/logo.svg"
             alt=""
           />
-        </Link>
-      </div>
+        </div>
+      </NavLink>
 
-      <div className="rounded-lg p-4 fcen ">
-        <Link to="calendar">
+      <NavLink
+        to="calendar"
+        className=": rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+      >
+        <div className={""}>
           <img
             className="h-[25px] w-[26px] "
             src="icons/navigation/calendar.svg"
             alt=""
           />
-        </Link>
-      </div>
+        </div>
+      </NavLink>
 
-      <div className="rounded-lg p-4 fcen ">
-        <Link to="service">
+      <NavLink
+        to="service"
+        className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+      >
+        <div>
           <img
             className="h-[25px] w-[26px] "
             src="icons/navigation/cash register.svg"
             alt=""
           />
-        </Link>
-      </div>
+        </div>
+      </NavLink>
 
-      <div className="rounded-lg p-4 fcen ">
-        <Link to="products">
+      <NavLink
+        to="products"
+        className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+      >
+        <div>
           <img
             className="h-[25px] w-[26px] "
             src="icons/navigation/products.svg"
             alt=""
           />
-        </Link>
-      </div>
+        </div>
+      </NavLink>
 
-      <div className="rounded-lg p-4 fcen ">
-        <Link to="customers">
+      <NavLink
+        to="customers"
+        className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+      >
+        <div>
           <img
             className="h-[25px] w-[26px] "
             src="icons/navigation/customers.svg"
             alt=""
           />
-        </Link>
-      </div>
+        </div>
+      </NavLink>
 
-      <div className="rounded-lg p-4 fcen ">
-        <Link to="marketing">
+      <NavLink
+        to="marketing"
+        className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+      >
+        <div>
           <img
             className="h-[25px] w-[26px] "
             src="icons/navigation/communication.svg"
             alt=""
           />
-        </Link>
-      </div>
+        </div>
+      </NavLink>
 
-      <div className="rounded-lg p-4 fcen ">
-        <Link to="reports">
+      <NavLink
+        to="reports"
+        className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+      >
+        <div>
           <img
             className="h-[25px] w-[26px] "
             src="icons/navigation/reports.svg"
             alt=""
           />
-        </Link>
-      </div>
+        </div>
+      </NavLink>
 
       <div className="flex flex-1 flex-col justify-end">
-        <div className="rounded-lg p-4 fcen ">
-          <Link to="settings">
+        <NavLink
+          to="settings"
+          className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue  "
+        >
+          <div>
             <img
               className="h-[25px] w-[26px] "
               src="icons/navigation/settings.svg"
               alt=""
             />
-          </Link>
-        </div>
+          </div>
+        </NavLink>
       </div>
     </div>
   );
