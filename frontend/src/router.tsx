@@ -9,6 +9,7 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Welcome from "./pages/Welcome";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      { path: "welcome", element: <Welcome /> },
       { path: "calendar", element: <Calendar /> },
       { path: "service", element: <Service /> },
       { path: "products", element: <Products /> },

@@ -1,4 +1,4 @@
-function ListCell() {
-  return <div>ListCell</div>;
+function AppoinmentList() {
+  return <div>AppoinmentList</div>;
 }
-export default ListCell;
+export default AppoinmentList;

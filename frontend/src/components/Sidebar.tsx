@@ -4,7 +4,7 @@ function Sidebar() {
   return (
     <div className="flex flex-none flex-col   gap-[5px] bg-denum p-[5px] ">
       <NavLink
-        to=""
+        to="/welcome"
         className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
       >
         <div>
@@ -29,7 +29,7 @@ function Sidebar() {
         </div>
       </NavLink>
 
-      <NavLink
+      {/* <NavLink
         to="service"
         className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
       >
@@ -40,7 +40,7 @@ function Sidebar() {
             alt=""
           />
         </div>
-      </NavLink>
+      </NavLink> */}
 
       <NavLink
         to="products"
@@ -68,7 +68,7 @@ function Sidebar() {
         </div>
       </NavLink>
 
-      <NavLink
+      {/* <NavLink
         to="marketing"
         className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
       >
@@ -79,7 +79,7 @@ function Sidebar() {
             alt=""
           />
         </div>
-      </NavLink>
+      </NavLink> */}
 
       <NavLink
         to="reports"

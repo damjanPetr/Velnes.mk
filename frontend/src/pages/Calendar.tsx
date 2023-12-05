@@ -1,4 +1,11 @@
+import Header from "../components/navigation/Header";
+
 function Calendar() {
-  return <div>Calendar</div>;
+  return (
+    <div>
+      <Header heading="Calendar" />
+      Calendar
+    </div>
+  );
 }
 export default Calendar;

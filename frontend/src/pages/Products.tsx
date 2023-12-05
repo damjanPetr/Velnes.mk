@@ -1,4 +1,11 @@
+import Header from "../components/navigation/Header";
+
 function Products() {
-  return <div>Products</div>;
+  return (
+    <div>
+      <Header heading="Products" />
+      Products
+    </div>
+  );
 }
 export default Products;

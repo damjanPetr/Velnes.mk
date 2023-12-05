@@ -1,4 +1,11 @@
+import Header from "../components/navigation/Header";
+
 function Customers() {
-  return <div>Customers</div>;
+  return (
+    <div>
+      <Header heading="Customers" />
+      Customers
+    </div>
+  );
 }
 export default Customers;

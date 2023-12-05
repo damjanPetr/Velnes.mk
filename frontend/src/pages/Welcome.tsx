@@ -1,10 +1,10 @@
 import Header from "../components/navigation/Header";
 
-function Settings() {
+function Welcome() {
   return (
     <div>
-      <Header heading="Settings" />
+      <Header heading="" />
     </div>
   );
 }
-export default Settings;
+export default Welcome;
