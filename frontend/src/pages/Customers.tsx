@@ -4,7 +4,7 @@ function Customers() {
   return (
     <div>
       <Header heading="Customers" />
-      Customers
+      <div className="p-6"></div>
     </div>
   );
 }

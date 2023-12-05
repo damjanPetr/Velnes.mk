@@ -1,26 +1,11 @@
-import { NavLink } from "react-router-dom";
+type Props = {
+  children?: React.ReactNode;
+};
 
-type Props = { name: string; path: string }[];
-
-function TabHeader(props: Props) {
+function TabHeader({ children }: Props) {
   return (
-    <div className="flex items-center gap-5">
-      {props.map(({ name, path }) => {
-        return (
-          <div className="px-2.5 pb-5 pt-2.5">
-            <NavLink
-              to={`${path}`}
-              className={({ isActive }) => {
-                return "text-lg font-medium " + isActive
-                  ? "border-b-[3px]"
-                  : "";
-              }}
-            >
-              {name}
-            </NavLink>
-          </div>
-        );
-      })}
+    <div className={`flex items-center gap-5 bg-gray-04 pl-[26px] `}>
+      <div className=" mt-[23px] flex gap-5 ">{children}</div>
     </div>
   );
 }

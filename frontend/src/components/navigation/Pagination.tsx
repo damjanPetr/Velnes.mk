@@ -1,5 +1,5 @@
-type Props = number[];
-function Pagination(pages: Props) {
+type Props = { pages: number[] };
+function Pagination({ pages }: Props) {
   return (
     <div className="flex items-center">
       <div className="fcen">

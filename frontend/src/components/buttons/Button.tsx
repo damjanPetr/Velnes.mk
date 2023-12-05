@@ -5,7 +5,7 @@ type Props = {
   leftIcon?: string;
   rightIcon?: boolean;
   optinal?: string;
-  handleClick: (e: React.MouseEvent) => void;
+  handleClick?: (e: React.MouseEvent) => void;
 };
 function Button({
   type = "primary",
@@ -49,8 +49,16 @@ function Button({
         {text}
       </button>
       {rightIcon && (
-        <div>
-          <img src="icons/arrow/chevron-right.svg" alt="" />
+        <div className="fcen">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M19 11H13V5H11V11H5V13H11V19H13V13H19V11Z" />
+          </svg>
         </div>
       )}
     </div>

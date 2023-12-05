@@ -1,6 +1,11 @@
+import { useState } from "react";
+import AccountSidebar from "./AccountSidebar";
+
 function MainHeader() {
+  const [openAccountDropDown, setOpenAccountDropDown] =
+    useState<boolean>(false);
   return (
-    <nav className="pb-4 pt-[14px]">
+    <nav className="relative pb-4 pt-[14px]">
       <ul className="flex items-center gap-[25px]">
         <li>
           <a href="">
@@ -13,11 +18,18 @@ function MainHeader() {
           </a>
         </li>
         <li>
-          <a href="" className="fcen">
-            <div className="h-10 w-10 rounded-full ">img</div>
-          </a>
+          <button
+            href=""
+            className="fcen"
+            onClick={() => {
+              setOpenAccountDropDown(!openAccountDropDown);
+            }}
+          >
+            <div className="bg-rosy-brown h-10 w-10 rounded-full "></div>
+          </button>
         </li>
       </ul>
+      {<AccountSidebar toggle={openAccountDropDown} />}
     </nav>
   );
 }

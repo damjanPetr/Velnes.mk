@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 import axios from "./axios";
 
 type UserProps = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   email_verified_at: string;
@@ -35,25 +35,17 @@ const AuthContent = createContext<{
 });
 
 const AuthProvider = ({ children }: { children: JSX.Element }) => {
-  const [user, _setUser] = useState<UserProps>({
-    name: "",
-    email: "",
-    password: "",
-    token: "",
-    role: "",
-    _id: "",
-    createdAt: "",
-    updatedAt: "",
-  });
+  const [user, _setUser] = useState<UserProps>(
+    JSON.parse(localStorage.getItem("user") || null),
+  );
+
   // const [settings, setSettings] = useState<SettingsProps>();
+  localStorage.getItem("user");
 
   // set user to local storage
   const setUser = (user: UserProps) => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
-    }
+    localStorage.setItem("user", JSON.stringify(user));
+    // localStorage.removeItem("user");
     _setUser(user);
   };
 

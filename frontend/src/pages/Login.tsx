@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/buttons/Button";
 import Input from "../components/inputs/Input";
 import { useAuth } from "../helpers/AuthContext";
@@ -7,6 +7,7 @@ import axios from "../helpers/axios";
 import authFunctions from "../hooks/authFunctions";
 
 function Login() {
+  const navigate = useNavigate();
   const [state, setState] = useState<
     "login" | "forgot_password" | "check_inbox"
   >("login");
@@ -127,8 +128,8 @@ function Login() {
 
                     if (response.data) {
                       setUser(response.data);
+                      navigate("/welcome");
                     }
-                    console.log(response.data);
                   }}
                 />
               </div>

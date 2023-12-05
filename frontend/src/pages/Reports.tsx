@@ -4,7 +4,7 @@ function Reports() {
   return (
     <div>
       <Header heading="Reports" />
-      Reports
+      <div className="p-6"></div>
     </div>
   );
 }

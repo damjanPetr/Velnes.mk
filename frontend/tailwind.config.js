@@ -17,7 +17,7 @@ export default {
       mindaro: "#CCDC89",
       "mountbatten-pink": "#9B839F",
       "munsell-blue": "#3689A0",
-      "rosy brown": "#CD9595",
+      "rosy-brown": "#CD9595",
       straw: "#F7E97C",
       sunset: "#FFCC7E",
       vindigris: "#48B3AD",

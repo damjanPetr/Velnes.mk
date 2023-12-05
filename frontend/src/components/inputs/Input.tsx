@@ -1,6 +1,8 @@
 type Props = {
+  children?: React.ReactNode;
   type: string;
   size: "small" | "large";
+  placeholder?: string;
   icon?: "eye" | "down-arrow";
   id: string;
   handleChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -10,21 +12,24 @@ function Input({
   type = "text",
   size,
   icon,
+  placeholder,
   id,
   handleChange,
   handleFocus,
+  children,
 }: Props) {
   return (
     <div
       onFocus={handleFocus}
       className="flex items-center rounded-lg p-2.5 pl-[14px] outline outline-1 outline-gray-03   focus-within:outline-2 focus-within:outline-denum  "
     >
+      {children}
       <input
         onChange={handleChange}
         type={type}
-        placeholder=""
+        placeholder={placeholder}
         id={id}
-        className={`flex-grow  font-medium outline-none  placeholder:text-gray-03  ${
+        className={`ml-2 flex-grow  font-medium outline-none  placeholder:text-gray-03  ${
           size == "small" ? "text-[14px]" : " text-[16px]"
         }`}
       />

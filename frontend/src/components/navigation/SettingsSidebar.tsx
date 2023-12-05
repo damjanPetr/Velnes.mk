@@ -1,9 +1,7 @@
-import { Outlet } from "react-router-dom";
-
-function SettingsSidebar() {
+function SettingsSidebar({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-5 p-2.5">
-      <Outlet />
+    <div className="sticky  max-h-[calc(100vh-80px)]  max-w-[270px] space-y-5 overflow-scroll p-2.5">
+      {children}
     </div>
   );
 }
