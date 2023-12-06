@@ -3,7 +3,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-function MessageCard({ color, children }: Props) {
+function Status({ color, children }: Props) {
   const bgColor = {
     green: "bg-mint-green",
     red: "bg-misty-rose",
@@ -18,13 +18,9 @@ function MessageCard({ color, children }: Props) {
   };
 
   return (
-    <div className={`rounded-lg p-5  ${bgColor[color]}`}>
-      <div
-        className={`${textColor[color]}  flex items-center gap-2.5 font-bold`}
-      >
-        {children}
-      </div>
+    <div className={`rounded-full px-5 py-2.5  ${bgColor[color]}`}>
+      <div className={`${textColor[color]} font-bold`}>{children}</div>
     </div>
   );
 }
-export default MessageCard;
+export default Status;

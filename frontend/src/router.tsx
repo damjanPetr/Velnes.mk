@@ -10,6 +10,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Welcome from "./pages/Welcome";
+import UserOverview from "./pages/UserOverview";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,15 @@ const router = createBrowserRouter([
       { path: "marketing", element: <Marketing /> },
       { path: "reports", element: <Reports /> },
       { path: "settings", element: <Settings /> },
+      {
+        path: ":userId",
+        element: <UserOverview />,
+        loader: ({ params }) => {
+          const userId = params.userId;
+
+          return true;
+        },
+      },
     ],
   },
 ]);

@@ -5,7 +5,7 @@ function InputIcon({
 }: {
   children?: React.ReactNode;
   placeholder: string;
-  icon?: "scissors" | "people";
+  icon?: "scissors" | "people" | "star" | "bottle";
 }) {
   return (
     <div className="relative flex items-center rounded-lg border border-gray-03 p-[10px] pl-[14px] ">
@@ -24,6 +24,66 @@ function InputIcon({
             />
           </svg>
         )}
+        {icon === "bottle" && (
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <mask
+              id="mask0_279_18152"
+              // style="mask-type:luminance"
+              maskUnits="userSpaceOnUse"
+              x="8"
+              y="3"
+              width="9"
+              height="17"
+            >
+              <path
+                d="M11.3205 6.25H13.4299L15.75 10.4425V19H9V10.4425L11.3205 6.25Z"
+                stroke="white"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M10.875 4H13.875V6.25H10.875V4Z"
+                fill="white"
+                stroke="white"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13.5 12.25C13.5 11.6287 12.9963 11.125 12.375 11.125C11.7537 11.125 11.25 11.6287 11.25 12.25V14.5C11.25 15.1213 11.7537 15.625 12.375 15.625C12.9963 15.625 13.5 15.1213 13.5 14.5V12.25Z"
+                fill="white"
+                stroke="white"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </mask>
+            <g mask="url(#mask0_279_18152)">
+              <path d="M3.375 2.5H21.375V20.5H3.375V2.5Z" fill="#7A7E87" />
+            </g>
+          </svg>
+        )}
+        {icon === "star" && (
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 12C9.87511 12 12 9.949 12 5C12 9.949 14.1101 12 19 12C14.1101 12 12 14.1101 12 19C12 14.1101 9.87511 12 5 12Z"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+          </svg>
+        )}
         {icon === "people" && (
           <svg
             width="24"
@@ -39,7 +99,7 @@ function InputIcon({
           </svg>
         )}
       </div>
-      <p className="font-medium text-gray-01">{placeholder}</p>
+      <p className="flex-1 font-medium text-gray-01">{placeholder}</p>
       <div className="p-1 fcen">
         <svg
           width="24"

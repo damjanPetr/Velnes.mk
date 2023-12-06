@@ -1,12 +1,11 @@
 import { useState } from "react";
 import Button from "../components/buttons/Button";
-import Header from "../components/navigation/Header";
-import TabPopUp from "../components/tabs/TabPopUp";
-import Input from "../components/inputs/Input";
-import PageSection from "../components/navigation/PageSection";
 import StandardBtn from "../components/buttons/StandardBtn";
-import Note from "../components/note/Note";
 import InputIcon from "../components/inputs/InputIcon";
+import Header from "../components/navigation/Header";
+import PageSection from "../components/navigation/PageSection";
+import Note from "../components/note/Note";
+import TabPopUp from "../components/tabs/TabPopUp";
 
 function Welcome() {
   const [tabs, setTabs] = useState<"Schedule" | "Activity">("Schedule");
@@ -15,7 +14,7 @@ function Welcome() {
       <Header heading="" />
 
       <div className="flex p-6 ">
-        <div className="basis-1/2">
+        <div className="basis-1/2 pr-5">
           <section className="max-w-lg">
             <div className="">
               <h2 className="text-2xl font-bold">Welcome to Velnes!</h2>
@@ -84,6 +83,7 @@ function Welcome() {
                 <Note
                   data={{
                     name: "John Doe",
+
                     content:
                       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis, natus?",
                     date: "2 days ago",

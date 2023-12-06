@@ -1,9 +1,11 @@
 function StandardBtn({
   text,
   handleClick,
+  children,
 }: {
-  text: string;
+  text?: string;
   handleClick?: () => void;
+  children?: React.ReactNode;
 }) {
   return (
     <button
@@ -11,6 +13,7 @@ function StandardBtn({
       onClick={handleClick}
     >
       {text}
+      {children}
     </button>
   );
 }
