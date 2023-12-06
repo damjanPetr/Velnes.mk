@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Welcome from "./pages/Welcome";
 import UserOverview from "./pages/UserOverview";
+import Account from "./pages/Account";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "welcome", element: <Welcome /> },
+      { path: "account", element: <Account /> },
       { path: "calendar", element: <Calendar /> },
       { path: "service", element: <Service /> },
       { path: "products", element: <Products /> },

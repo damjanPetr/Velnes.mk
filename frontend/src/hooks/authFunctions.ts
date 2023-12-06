@@ -39,7 +39,9 @@ async function login(email: string, password: string) {
   }
 }
 
-function logout() {}
+function logout() {
+  localStorage.removeItem("user");
+}
 function forgotPassword() {}
 function resetPassword() {}
 const authFunctions = {

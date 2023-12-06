@@ -1,11 +1,18 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useMatch, useMatches } from "react-router-dom";
 
 function Sidebar() {
+  const match = useMatches();
+
+  const loc = useLocation();
+  console.log(loc.pathname);
+
   return (
     <div className="flex flex-none flex-col   gap-[5px] bg-denum p-[5px] ">
       <NavLink
         to="/welcome"
-        className="rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue "
+        className={`rounded-lg p-4 transition-colors fcen [&.active]:bg-marian-blue  ${
+          loc.pathname === "/account" ? "active" : ""
+        }`}
       >
         <div>
           <img
