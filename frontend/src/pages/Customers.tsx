@@ -1,10 +1,31 @@
+import { useLoaderData } from "react-router-dom";
 import Button from "../components/buttons/Button";
 import Input from "../components/inputs/Input";
 import InputIcon from "../components/inputs/InputIcon";
 import Header from "../components/navigation/Header";
 import Pagination from "../components/navigation/Pagination";
+import axios from "../helpers/axios";
+
+export type Customer = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+};
+export const CustomersLoader = async () => {
+  const res = await axios.get("/api/customers");
+  return res.data;
+};
 
 function Customers() {
+  const { data } = useLoaderData() as { data: Customer[] };
+
+  console.log("🚀 ✔ file: Customers.tsx:26 ✔ Customers ✔ data:", data);
+
   return (
     <div>
       <Header heading="Customers" />
@@ -19,8 +40,8 @@ function Customers() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M6.46582 10.9467C6.46582 8.472 8.472 6.46582 10.9467 6.46582C13.4215 6.46582 15.4277 8.472 15.4277 10.9467C15.4277 13.4215 13.4215 15.4277 10.9467 15.4277C8.472 15.4277 6.46582 13.4215 6.46582 10.9467ZM10.9467 4.46582C7.36743 4.46582 4.46582 7.36743 4.46582 10.9467C4.46582 14.5261 7.36743 17.4277 10.9467 17.4277C12.3756 17.4277 13.6964 16.9653 14.7678 16.182L18.7102 20.1244L20.1244 18.7102L16.182 14.7678C16.9653 13.6964 17.4277 12.3756 17.4277 10.9467C17.4277 7.36743 14.5261 4.46582 10.9467 4.46582Z"
                 fill="#7A7E87"
               />
@@ -106,39 +127,47 @@ function Customers() {
               </tr>
             </thead>
             <tbody className="odd:bg-gray-07">
-              <tr className="odd:bg-gray-07">
-                <td className="p-5 font-medium">Ana Georgieva</td>
-                <td className="p-5 font-medium">Customer Group</td>
-                <td className="p-5 font-medium">+9988 5666 989</td>
-                <td className="p-5 font-medium">+9988 5666 989</td>
-                <td className="p-5 font-medium">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    className="mx-auto fill-pine-green"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M9.99997 15.586L6.70697 12.293L5.29297 13.707L9.99997 18.414L19.707 8.70697L18.293 7.29297L9.99997 15.586Z"
-                      fill="#7A7E87"
-                    />
-                  </svg>
-                </td>
-                <td className="relative p-5 font-medium">
-                  <svg
-                    onClick={() => {}}
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    className=" text-gray-01 hover:bg-black"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM18 10C16.9 10 16 10.9 16 12C16 13.1 16.9 14 18 14C19.1 14 20 13.1 20 12C20 10.9 19.1 10 18 10ZM6 10C4.9 10 4 10.9 4 12C4 13.1 4.9 14 6 14C7.1 14 8 13.1 8 12C8 10.9 7.1 10 6 10Z" />
-                  </svg>
-                </td>
-              </tr>
+              {data
+                ? data.map((customer) => {
+                    return (
+                      <tr className="odd:bg-gray-07">
+                        <td className="p-5 font-medium">
+                          {customer.firstName + " " + customer.lastName}
+                        </td>
+                        <td className="p-5 font-medium">Customer Group</td>
+                        <td className="p-5 font-medium">{customer.phone}</td>
+                        <td className="p-5 font-medium">{customer.email}</td>
+                        <td className="p-5 font-medium">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            className="mx-auto fill-pine-green"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M9.99997 15.586L6.70697 12.293L5.29297 13.707L9.99997 18.414L19.707 8.70697L18.293 7.29297L9.99997 15.586Z"
+                              fill="#7A7E87"
+                            />
+                          </svg>
+                        </td>
+                        <td className="relative p-5 font-medium">
+                          <svg
+                            onClick={() => {}}
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            className=" text-gray-01 hover:bg-black"
+                            fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10ZM18 10C16.9 10 16 10.9 16 12C16 13.1 16.9 14 18 14C19.1 14 20 13.1 20 12C20 10.9 19.1 10 18 10ZM6 10C4.9 10 4 10.9 4 12C4 13.1 4.9 14 6 14C7.1 14 8 13.1 8 12C8 10.9 7.1 10 6 10Z" />
+                          </svg>
+                        </td>
+                      </tr>
+                    );
+                  })
+                : null}
             </tbody>
           </table>
         </div>

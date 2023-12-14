@@ -1,8 +1,9 @@
 type Props = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   text: string;
+  xHandleClick?: () => void;
 };
-function PopUpTop({ children, text }: Props) {
+function PopUpTop({ children, text, xHandleClick }: Props) {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between">
@@ -10,7 +11,7 @@ function PopUpTop({ children, text }: Props) {
           <p className="text-lg font-bold">{text}</p>
           <div className="">{children}</div>
         </div>
-        <div className="mr-4">
+        <div className="mr-1 cursor-pointer" onClick={xHandleClick}>
           <svg
             width="24"
             height="24"

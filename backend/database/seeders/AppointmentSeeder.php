@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Appointment;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,12 +12,6 @@ class AppointmentSeeder extends Seeder
      */
     public function run(): void
     {
-
-        Appointment::query()->create([
-            'name' => fake()->name(),
-            'email' => fake()->email(),
-            'phone' => fake()->phoneNumber(),
-            'user_id' => 1
-        ]);
+        \App\Models\Appointment::factory(10)->create();
     }
 }

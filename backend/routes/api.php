@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\ServiceController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +23,26 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::apiResources([
+    'products' => ProductController::class,
+    'services' => ServiceController::class,
+    'resources' => ResourceController::class,
+    'customers' => CustomerController::class,
+    'appointments' => AppointmentController::class
+
+]);
+
+Route::get('users', function (Request $request) {
+    return User::all()->where('saloon_id', "=", auth()->user()->saloon_id)->map(function ($user) {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            "email" => $user->email,
+            "saloonId" => $user->saloon_id,
+            "createdAt" => $user->created_at,
+            "updatedAt" => $user->updated_at,
+        ];
+    })->toJson();
+});
+

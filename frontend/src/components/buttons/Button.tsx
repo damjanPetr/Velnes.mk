@@ -38,7 +38,8 @@ function Button({
     >
       {leftIcon && (
         <div>
-          <img src="icons/arrow/chevron-left.svg" alt="" />
+          {/* <img src="icons/arrow/chevron-left.svg" alt="" /> */}
+          <img src="icons/action/plus.svg" alt="" />
         </div>
       )}
       <button

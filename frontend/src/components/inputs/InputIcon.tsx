@@ -44,24 +44,24 @@ function InputIcon({
               <path
                 d="M11.3205 6.25H13.4299L15.75 10.4425V19H9V10.4425L11.3205 6.25Z"
                 stroke="white"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M10.875 4H13.875V6.25H10.875V4Z"
                 fill="white"
                 stroke="white"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M13.5 12.25C13.5 11.6287 12.9963 11.125 12.375 11.125C11.7537 11.125 11.25 11.6287 11.25 12.25V14.5C11.25 15.1213 11.7537 15.625 12.375 15.625C12.9963 15.625 13.5 15.1213 13.5 14.5V12.25Z"
                 fill="white"
                 stroke="white"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </mask>
             <g mask="url(#mask0_279_18152)">
@@ -79,8 +79,8 @@ function InputIcon({
           >
             <path
               d="M5 12C9.87511 12 12 9.949 12 5C12 9.949 14.1101 12 19 12C14.1101 12 12 14.1101 12 19C12 14.1101 9.87511 12 5 12Z"
-              stroke-width="1.5"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
             />
           </svg>
         )}

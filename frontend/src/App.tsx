@@ -9,7 +9,7 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(user);
+    // console.log("%c USER", "background: black", user);
     if (!user) {
       navigate("/login");
     }

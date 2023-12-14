@@ -1,8 +1,56 @@
+import { useState } from "react";
+import LayerScreen from "../components/LayerScreen";
 import Button from "../components/buttons/Button";
+import Checkbox from "../components/buttons/Checkbox";
+import StandardBtn from "../components/buttons/StandardBtn";
+import Input from "../components/inputs/Input";
 import InputIcon from "../components/inputs/InputIcon";
 import Header from "../components/navigation/Header";
+import PopUpTop from "../components/navigation/PopUpTop";
+import axios from "../helpers/axios";
+import { useLoaderData } from "react-router-dom";
+import {
+  appontimentsProps,
+  resourcesProps,
+  servicesProps,
+  userProps,
+} from "../router";
+import StandardDropdownCell from "../components/dropdown/StandardDropdownCell";
+
+export type CalendarProps = {
+  children?: React.ReactNode;
+};
+
+export async function AppointmentsLoader() {
+  const res = await axios.get("/api/appointments");
+  return res.data;
+}
+
+export async function ServicesLoader() {
+  const res = await axios.get("/api/services");
+  return res.data;
+}
+
+export async function ResourcesLoader() {
+  const res = await axios.get("/api/resources");
+  return res.data;
+}
+
+export async function UsersLoader() {
+  const res = await axios.get("/api/users");
+  return res.data;
+}
 
 function Calendar() {
+  const [screen, setScreen] = useState<boolean>(false);
+
+  const { services, resources, appointments, users } = useLoaderData() as {
+    services: { data: servicesProps[] };
+    resources: { data: resourcesProps[] };
+    appointments: { data: appontimentsProps[] };
+    users: userProps[];
+  };
+
   return (
     <div>
       <Header heading="Calendar">
@@ -20,18 +68,234 @@ function Calendar() {
       <div className="p-6">
         <section className="flex gap-5 ">
           <InputIcon placeholder="Week"></InputIcon>
-          <InputIcon icon="people" placeholder="All Employees"></InputIcon>
+          <InputIcon icon="people" placeholder="All Employees">
+            <div className="absolute bottom-0 left-0 w-full">
+              {users.map((item) => {
+                return (
+                  <StandardDropdownCell text={item.name}></StandardDropdownCell>
+                );
+              })}
+            </div>
+          </InputIcon>
           <InputIcon icon="scissors" placeholder="All Resources"></InputIcon>
           <Button
             size="large"
             text="Create New"
             type="primary"
+            handleClick={() => {
+              setScreen(true);
+            }}
             rightIcon
           ></Button>
         </section>
         <section className="mt-[22px] "></section>
       </div>
+
+      {screen && (
+        <LayerScreen>
+          <div className="min-w-[80vw] rounded-lg bg-gray-07">
+            <PopUpTop
+              text="Appointment"
+              xHandleClick={() => {
+                setScreen(false);
+              }}
+            ></PopUpTop>
+            <div className="relative flex  ">
+              {/* left */}
+              <div className="sticky left-0 top-0 max-h-[calc(80vh)] basis-3/4  overflow-auto p-[30px]">
+                <div className="rounded-lg border border-gray-04 bg-white p-5">
+                  <div className="flex items-center  gap-5  dirChildren:flex-1 ">
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">Service</p>
+                      <InputIcon placeholder="    "></InputIcon>
+                    </div>
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">Duration</p>
+                      <InputIcon placeholder="    "></InputIcon>
+                    </div>
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">
+                        Employee 1
+                      </p>
+                      <InputIcon placeholder="Select" icon="people"></InputIcon>
+                    </div>
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">
+                        Employee 2
+                      </p>
+                      <InputIcon placeholder="Select" icon="people"></InputIcon>
+                    </div>
+                  </div>
+                  <div className="mt-5 flex justify-between ">
+                    <div className="flex items-center">
+                      <p className="font-medium">Popular services</p>
+                    </div>
+                    <div className="p-1 fcen">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M6 19C6 19.5304 6.21071 20.0391 6.58579 20.4142C6.96086 20.7893 7.46957 21 8 21H16C16.5304 21 17.0391 20.7893 17.4142 20.4142C17.7893 20.0391 18 19.5304 18 19V7H6V19ZM8 9H16V19H8V9ZM15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5Z"
+                          fill="#7A7E87"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className=" flex-none">
+                    <Button
+                      text="Add Resource"
+                      type="tertiary"
+                      size="large"
+                      leftIcon="plus"
+                    />
+                  </div>
+                </div>
+                {/* Room Section */}
+                <div className="mt-[30px] rounded-lg border border-gray-04 bg-white p-5">
+                  <div className="flex items-center justify-between gap-5 dirChildren:flex-auto  ">
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">ROOM</p>
+                      <InputIcon placeholder="Select Room"></InputIcon>
+                    </div>
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">TOOL 1</p>
+                      <InputIcon placeholder="Select tool "></InputIcon>
+                    </div>
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">TOOL 2</p>
+                      <InputIcon placeholder="Select tool"></InputIcon>
+                    </div>
+                  </div>
+                </div>
+                {/* date section */}
+                <div className="mt-[30px] rounded-lg border border-gray-04 bg-white p-5">
+                  <div className="space-y-5">
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">
+                        Date And Time
+                      </p>
+                      <div className="flex items-center justify-between gap-5">
+                        <div className="flex-1">
+                          <InputIcon placeholder="Select"></InputIcon>
+                        </div>
+                        <div className="">
+                          <Input
+                            id="date"
+                            size="small"
+                            type="text"
+                            placeholder="00:00"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <StandardBtn text="Find Availabilities" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Checkbox id="checkbox" name="checkbox" value="1" />
+                      <p className=" font-medium">Repeat Appointment</p>
+                    </div>
+                    <div className="flex items-center  gap-5  ">
+                      <div className="">
+                        <p className="mb-2.5 font-bold text-gray-01">
+                          FREQUENCY
+                        </p>
+                        <InputIcon placeholder="Select Room"></InputIcon>
+                      </div>
+                      <div className="">
+                        <p className="mb-2.5 font-bold text-gray-01">EVERY</p>
+                        <InputIcon placeholder="Fry"></InputIcon>
+                      </div>
+                      <div className="">
+                        <p className="mb-2.5 font-bold text-gray-01">ON THE</p>
+                        <InputIcon placeholder="Weekly"></InputIcon>
+                      </div>
+                    </div>
+                    <div className="flex items-center  gap-5  ">
+                      <div className="">
+                        <p className="mb-2.5 font-bold text-gray-01">ENDS</p>
+                        <InputIcon placeholder="After a number of times"></InputIcon>
+                      </div>
+                      <div className="">
+                        <p className="mb-2.5 font-bold text-gray-01">TIMES</p>
+                        <InputIcon placeholder="5"></InputIcon>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex-none">
+                    <Button
+                      text="Add Service"
+                      type="tertiary"
+                      size="large"
+                      leftIcon="plus"
+                    />
+                  </div>
+                </div>
+                <div className="mt-[30px] rounded-lg border border-gray-04 bg-white p-5">
+                  <div className="flex items-center gap-4">
+                    <Checkbox id="checkbox" name="checkbox" value="1" />
+                    <p className="font-bold text-gray-01">ADD BUFFER TIME</p>
+                  </div>
+                </div>
+                <div className="mt-[30px] rounded-lg border border-gray-04 bg-white p-5">
+                  <p className="font-bold text-gray-01">NOTE</p>
+                  <div className="mt-2.5">
+                    <textarea
+                      name="note"
+                      id="note"
+                      cols={30}
+                      rows={3}
+                      placeholder="Write your note here"
+                      className="w-full resize-none rounded-lg border border-gray-04 py-2.5 pl-[14px]"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+              {/* right */}
+              <div className=" flex basis-1/4 flex-col justify-between bg-white p-[30px]   ">
+                <div className="">
+                  <div className="">
+                    <p className="mb-2.5 font-bold text-gray-01">EVERY</p>
+                    <InputIcon placeholder="Search"></InputIcon>
+                    <div className="mt-[30px]">
+                      <Button
+                        leftIcon="plus"
+                        size="large"
+                        text="New Customer"
+                        type="tertiary"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="">
+                  <div className="">
+                    <p className="mb-2.5 font-bold text-gray-01">
+                      DATE AND TIME
+                    </p>
+                    <p className="font-bold">22.08.2023, 11:00</p>
+                  </div>
+                  <div className="mt-[40px]">
+                    <p className="mb-2.5 font-bold text-gray-01">
+                      DATE AND TIME
+                    </p>
+                    <p className="font-bold">22.08.2023, 11:00</p>
+                  </div>
+                  <div className="">
+                    <StandardBtn text="Save Appointment" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </LayerScreen>
+      )}
     </div>
   );
 }
+
 export default Calendar;

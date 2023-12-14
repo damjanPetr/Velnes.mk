@@ -19,7 +19,7 @@ function AccountSidebar({ toggle }: { toggle: boolean }) {
         </NavLink>
       </div>
 
-      <div className="flex items-center gap-2.5 border-b border-gray-04 bg-white px-[16px] py-[10px]">
+      {/* <div className="flex items-center gap-2.5 border-b border-gray-04 bg-white px-[16px] py-[10px]">
         <img src="icons/action/plus.svg" alt="" />
 
         <NavLink
@@ -30,8 +30,8 @@ function AccountSidebar({ toggle }: { toggle: boolean }) {
         >
           Invite coleagues
         </NavLink>
-      </div>
-      <div className="flex items-center gap-2.5 rounded-b-lg  bg-white px-[16px] py-[10px]">
+      </div> */}
+      {/* <div className="flex items-center gap-2.5 rounded-b-lg  bg-white px-[16px] py-[10px]">
         <img src="icons/action/checkout.svg" alt="" />
         <NavLink
           to="/account"
@@ -41,7 +41,7 @@ function AccountSidebar({ toggle }: { toggle: boolean }) {
         >
           Billing
         </NavLink>
-      </div>
+      </div> */}
       <div className="flex items-center gap-2.5 border-b border-gray-04 bg-white px-[16px] py-[10px]">
         <img src="icons/action/logout.svg" alt="" />
         <NavLink
