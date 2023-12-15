@@ -4,7 +4,9 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ToolController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,12 +31,14 @@ Route::apiResources([
     'services' => ServiceController::class,
     'resources' => ResourceController::class,
     'customers' => CustomerController::class,
-    'appointments' => AppointmentController::class
-
+    'appointments' => AppointmentController::class,
+    'rooms' => RoomController::class,
+    'tools' => ToolController::class
 ]);
 
 Route::get('users', function (Request $request) {
-    return User::all()->where('saloon_id', "=", auth()->user()->saloon_id)->map(function ($user) {
+
+    $users = User::where('saloon_id', auth()->user()->saloon_id)->get()->map(function ($user) {
         return [
             'id' => $user->id,
             'name' => $user->name,
@@ -43,6 +47,10 @@ Route::get('users', function (Request $request) {
             "createdAt" => $user->created_at,
             "updatedAt" => $user->updated_at,
         ];
-    })->toJson();
+    });
+
+    return response()->json([
+        'data' => $users->toArray()
+    ]);
 });
 

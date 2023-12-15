@@ -17,6 +17,11 @@ class Service extends Model
         return $this->belongsTo(Appointment::class);
     }
 
+    public function saloon()
+    {
+        return $this->belongsTo(Saloon::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'service_user', 'service_id', 'user_id');

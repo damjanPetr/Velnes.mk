@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Saloon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +19,7 @@ class ToolFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
+            'saloon_id' => Saloon::all()->random()->id
         ];
     }
 }

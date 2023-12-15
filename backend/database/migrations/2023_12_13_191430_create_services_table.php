@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('duration');
             $table->string('price');
             $table->foreignId('appointment_id')->constrained()->onDelete('cascade');
+            $table->foreignId('saloon_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

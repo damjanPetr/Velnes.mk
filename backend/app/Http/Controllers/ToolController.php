@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ToolResource;
 use App\Models\Tool;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class ToolController extends Controller
      */
     public function index()
     {
-        //
+        return ToolResource::collection(Tool::query()->where('saloon_id', auth()->user()->saloon_id)->get());
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\RoomResource;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
+        return RoomResource::collection(Room::query()->where('saloon_id', auth()->user()->saloon_id)->get());
     }
 
     /**

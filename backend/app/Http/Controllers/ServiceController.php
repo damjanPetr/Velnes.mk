@@ -13,7 +13,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        return Service::all()->where('saloon_id', auth()->user()->saloon->id);
+        return Service::all()->where('saloon_id', auth()->user()->saloon_id);
     }
 
     /**

@@ -1,22 +1,24 @@
-import { Routes, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
+import Account from "./pages/Account";
 import Calendar, {
   AppointmentsLoader,
   ResourcesLoader,
   ServicesLoader,
   UsersLoader,
+  roomsLoader,
+  toolsLoader,
 } from "./pages/Calendar";
-import Service from "./pages/Service";
-import Products, { ProductsLoader } from "./pages/Products";
 import Customers, { CustomersLoader } from "./pages/Customers";
-import Marketing from "./pages/Marketing";
-import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import Marketing from "./pages/Marketing";
+import Products, { ProductsLoader } from "./pages/Products";
 import Register from "./pages/Register";
-import Welcome from "./pages/Welcome";
+import Reports from "./pages/Reports";
+import Service from "./pages/Service";
+import Settings from "./pages/Settings";
 import UserOverview from "./pages/UserOverview";
-import Account from "./pages/Account";
+import Welcome from "./pages/Welcome";
 
 export type appontimentsProps = {
   name: string;
@@ -25,6 +27,20 @@ export type appontimentsProps = {
   services: servicesProps[];
 };
 
+export type roomsProps = {
+  id: number;
+  name: string;
+  saloonId: number;
+  createdAt: string;
+  updatedAt: string;
+};
+export type toolsProps = {
+  id: number;
+  name: string;
+  saloonId: number;
+  createdAt: string;
+  updatedAt: string;
+};
 export type resourcesProps = {
   id: number;
   appointmentId: number;
@@ -77,21 +93,29 @@ const router = createBrowserRouter([
           const appointments = await AppointmentsLoader();
           const services = await ServicesLoader();
           const resources = await ResourcesLoader();
-          const user = await UsersLoader();
+          const users = await UsersLoader();
+          const rooms = await roomsLoader();
+          const tools = await toolsLoader();
+
+          console.log("%c rooms", "background: cyan", rooms);
+          console.log("%c tools", "background: purple", tools);
 
           console.log(
             "%c user",
             "background: black",
-            user,
-            Array.isArray(user),
+            users,
+            Array.isArray(users),
           );
-          console.log("%c appontiments", "background: red", appointments);
-          console.log("%c servicse", "background: blue", services);
+          console.log("%c appointments", "background: red", appointments);
+          console.log("%c services", "background: blue", services);
           console.log("%c resources", "background: green", resources);
           return {
             appointments,
             services,
             resources,
+            users,
+            tools,
+            rooms,
           };
         },
       },
@@ -102,7 +126,6 @@ const router = createBrowserRouter([
         loader: async () => {
           const data = await ProductsLoader();
           console.log(data);
-
           return data;
         },
       },

@@ -1,14 +1,27 @@
+import { useState } from "react";
+
 function InputIcon({
   children,
   placeholder,
   icon,
+  optionalCss,
 }: {
   children?: React.ReactNode;
   placeholder: string;
   icon?: "scissors" | "people" | "star" | "bottle";
+  optionalCss?: string;
 }) {
+  const [open, setOpen] = useState<boolean>(false);
+
   return (
-    <div className="relative flex items-center rounded-lg border border-gray-03 p-[10px] pl-[14px] ">
+    <div
+      className={
+        "relative flex items-center rounded-lg border border-gray-03 p-[10px] pl-[14px] " +
+        " " +
+        optionalCss
+      }
+      onClick={() => setOpen(!open)}
+    >
       <div className="p-1 fcen">
         {icon === "scissors" && (
           <svg
@@ -114,7 +127,7 @@ function InputIcon({
           />
         </svg>
       </div>
-      <div className="dropdow">{children}</div>
+      {open && children}
     </div>
   );
 }

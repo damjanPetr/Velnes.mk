@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Saloon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class RoomFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->word() . ' Room',
+            'saloon_id' => Saloon::all()->random()->id
         ];
     }
 }

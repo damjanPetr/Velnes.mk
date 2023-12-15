@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             AppointmentSeeder::class,
             ProductSeeder::class,
             ResourceSeeder::class,
-            ToolSeeder::class,
+            RoomSeeder::class,
             ServiceSeeder::class,
         ]);
     }
