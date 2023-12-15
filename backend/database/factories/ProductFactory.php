@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Saloon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,6 +23,7 @@ class ProductFactory extends Factory
             'name' => fake()->words(3, true),
             'price' => fake()->numberBetween(10, 250),
             'stock' => fake()->numberBetween(0, 130),
+            'product_category_id' => ProductCategory::query()->select('id')->inRandomOrder()->first()->id,
             'saloon_id' => Saloon::query()->select('id')->inRandomOrder()->first()->id
 
         ];

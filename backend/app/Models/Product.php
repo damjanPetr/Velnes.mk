@@ -14,5 +14,11 @@ class Product extends Model
         'stock_value',
         'saloon_id'
     ];
+    public function productCategory()
+    {
+
+        return $this->belongsTo(ProductCategory::class);
+    }
+
     use HasFactory;
 }

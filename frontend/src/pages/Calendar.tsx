@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { addDays, addMinutes, format, getHours } from "date-fns";
+import { useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import DatePickerCalendar from "../components/DatePickerCalendar";
 import LayerScreen from "../components/LayerScreen";
@@ -6,14 +7,21 @@ import Button from "../components/buttons/Button";
 import Checkbox from "../components/buttons/Checkbox";
 import StandardBtn from "../components/buttons/StandardBtn";
 import StandardDropdownCell from "../components/dropdown/StandardDropdownCell";
-import Input from "../components/inputs/Input";
 import InputIcon from "../components/inputs/InputIcon";
+import Service from "../components/lists/simple/Service";
 import Header from "../components/navigation/Header";
 import PopUpTop from "../components/navigation/PopUpTop";
+import { useAuth } from "../helpers/AuthContext";
 import axios from "../helpers/axios";
-import { appontimentsProps, resourcesProps, userProps } from "../props";
-import { roomsProps, toolsProps } from "../router";
-import { servicesProps } from "../servicesProps";
+import {
+  appontimentsProps,
+  resourcesProps,
+  roomsProps,
+  servicesProps,
+  toolsProps,
+  userProps,
+} from "../router";
+import { calcTime } from "../helpers/functions";
 
 export type CalendarProps = {
   children?: React.ReactNode;
@@ -49,42 +57,175 @@ export async function roomsLoader() {
 }
 
 function Calendar() {
+  const { user } = useAuth();
+  const [newAppointmentHelper, setNewAppointmentHelper] = useState<{
+    [key: string]: { label: string; value: string | null; price?: string };
+  }>({
+    service: {
+      label: "Select Service",
+      value: null,
+    },
+    duration: {
+      label: "00:30",
+      value: "30",
+    },
+    employee1: {
+      label: "Select",
+      value: null,
+    },
+    employee2: {
+      label: "Select",
+      value: null,
+    },
+    room: {
+      label: "Select Room",
+      value: null,
+    },
+    tool1: {
+      label: "Select Tool",
+      value: null,
+    },
+    tool2: {
+      label: "Select Tool",
+      value: null,
+    },
+    time: {
+      label: "",
+      value: "",
+    },
+    date: {
+      label: "",
+      value: "",
+    },
+    frequency: {
+      label: "",
+      value: "",
+    },
+    every: {
+      label: "",
+      value: "",
+    },
+    onTheDay: {
+      label: "",
+      value: "",
+    },
+    bufferTime: {
+      label: "00:15",
+      value: null,
+    },
+  });
+  const [appointmentDate, setappointmentDate] = useState<null | Date>(null);
+  const [appointmentTime, setAppointmentTime] = useState("");
   const [datePicker, setDatePicker] = useState<boolean>(false);
   const [screen, setScreen] = useState<boolean>(false);
-  const [buttonDate, setButtonDate] = useState<string>("Today");
-
   const [leftCalendarDate, setLeftCalendarDate] = useState<string>(
     new Date().toISOString(),
   );
   const [rightCalendarDate, setRightCalendarDate] = useState<string>(
     new Date().toISOString(),
   );
-
-  console.log(leftCalendarDate);
   const [userPlaceholder, setUserPlaceholder] = useState<{
     value: string;
     label: string;
   }>({ value: "all", label: "All Employees" });
-
   const [resourcePlaceholder, setResourcePlaceholder] = useState<{
     value: string;
     label: string;
   }>({ value: "all", label: "All Resources" });
-
   const [timePlaceholder, setTimePlaceholder] = useState<{
     value: string;
     label: string;
   }>({ value: "week", label: "Week" });
-
+  type newDetailProps = {
+    note: string | null;
+    saloonId: number | undefined;
+    date: string;
+    services: {
+      details: {
+        duration: string | undefined;
+        name: string | undefined;
+        price: string | undefined;
+      };
+      employees: { label: string; value: string | null }[];
+    }[];
+    resources: Pick<resourcesProps, "tool1" | "tool2" | "saloonId">[];
+    bufferTime: string | null;
+    // room: string | null;
+    // tool1: string | null;
+    // tool2: string | null;
+  };
+  const [newAppointmentDetails, setnewAppointmentDetails] =
+    useState<newDetailProps>({
+      note: null,
+      saloonId: user?.salon_id,
+      date: "",
+      services: [],
+      resources: [],
+      bufferTime: newAppointmentHelper.bufferTime.value,
+      // room: newAppointmentHelper.room.value,
+      // tool1: newAppointmentHelper.tool1.value,
+      // tool2: newAppointmentHelper.tool2.value,
+    });
+  const [repeatAppointment, setRepeatAppointment] = useState<boolean>(false);
+  const [bufferTime, setBufferTime] = useState<boolean>(false);
   const { services, resources, appointments, users, tools, rooms } =
     useLoaderData() as {
-      services: { data: servicesProps[] };
+      services: servicesProps[];
       resources: { data: resourcesProps[] };
       appointments: { data: appontimentsProps[] };
       users: { data: userProps[] };
       tools: { data: toolsProps[] };
       rooms: { data: roomsProps[] };
     };
+  const prevMyStateRef = useRef();
+
+  const [screen2, setScreen2] = useState<boolean>(false);
+  const [screen3, setScreen3] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{ [key: string]: string | null }>({
+    service: null,
+    duration: null,
+    employee1: null,
+    room: null,
+    tool1: null,
+    tool2: null,
+    date: null,
+    time: null,
+    frequency: null,
+    every: null,
+    onThe: null,
+    ends: null,
+    times: null,
+  });
+
+  function vali(s: string | null, field: string, message: string) {
+    console.log(s, s == null);
+    if (s === null) {
+      setErrors({
+        ...errors,
+        [field]: message,
+      });
+    }
+    if (s !== null) {
+      setErrors({
+        ...errors,
+        [field]: null,
+      });
+    }
+    console.log(s, field, message, errors);
+  }
+
+  useEffect(() => {
+    if (prevMyStateRef.current !== newAppointmentHelper) {
+      setnewAppointmentDetails({
+        ...newAppointmentDetails,
+        bufferTime: newAppointmentHelper.bufferTime.value,
+        // room: newAppointmentHelper.room.value,
+        // tool1: newAppointmentHelper.tool1.value,
+        // tool2: newAppointmentHelper.tool2.value,
+      });
+      prevMyStateRef.current = newAppointmentHelper as unknown;
+    }
+  }, [newAppointmentHelper, newAppointmentDetails]);
 
   return (
     <div>
@@ -102,7 +243,13 @@ function Calendar() {
       </Header>
       <div className="p-6">
         <section className="flex gap-5 ">
-          <StandardBtn text={buttonDate} />
+          <StandardBtn
+            text="Today"
+            handleClick={() => {
+              setLeftCalendarDate(new Date().toISOString());
+              setRightCalendarDate(new Date().toISOString());
+            }}
+          />
           {/* Time dropdow */}
           <div className="relative flex items-center justify-between gap-[5px] ">
             <div
@@ -229,9 +376,7 @@ function Calendar() {
           </InputIcon>
           <InputIcon
             optionalCss="w-[200px]"
-            icon={
-              userPlaceholder.label === "All Employees" ? "people" : undefined
-            }
+            icon={userPlaceholder.label === null ? "people" : undefined}
             placeholder={userPlaceholder.label}
           >
             <div className="absolute top-[calc(100%+5px)] -ml-[14px]  w-full rounded-lg bg-white shadow-lg">
@@ -381,27 +526,180 @@ function Calendar() {
               {/* left */}
               <div className="sticky left-0 top-0 max-h-[calc(80vh)] basis-3/4  overflow-auto p-[30px]">
                 <div className="rounded-lg border border-gray-04 bg-white p-5">
+                  <div className="">
+                    {newAppointmentDetails.services.map((item, index) => {
+                      console.log("%c [DEBUG]", "background: pink", item);
+
+                      {
+                        return (
+                          <Service
+                            key={index}
+                            title={item.details.name}
+                            duration={item.details.duration}
+                            price={item.details.price}
+                            employee={item.employees}
+                            handleClick={() => {
+                              setnewAppointmentDetails({
+                                ...newAppointmentDetails,
+                                services: newAppointmentDetails.services.filter(
+                                  (i) => i !== item,
+                                ),
+                              });
+                            }}
+                          ></Service>
+                        );
+                      }
+                    })}
+                  </div>
+
                   <div className="flex items-center  gap-5  dirChildren:flex-1 ">
                     <div className="">
                       <p className="mb-2.5 font-bold text-gray-01">Service</p>
-                      <InputIcon placeholder="    "></InputIcon>
+                      <InputIcon
+                        placeholder={newAppointmentHelper.service.label}
+                      >
+                        <div className="absolute top-[calc(100%+5px)] z-10  -ml-[14px] w-full rounded-lg bg-white shadow-lg">
+                          {services.map((item) => {
+                            return (
+                              <StandardDropdownCell
+                                handleClick={() => {
+                                  setNewAppointmentHelper({
+                                    ...newAppointmentHelper,
+                                    service: {
+                                      label: item.name,
+                                      value: item.id.toString(),
+                                      price: item.price,
+                                    },
+                                  });
+                                }}
+                                key={item.id}
+                                text={item.name}
+                              ></StandardDropdownCell>
+                            );
+                          })}
+                        </div>
+                      </InputIcon>
+                      {errors.service && (
+                        <p className="mt-2 rounded-md bg-misty-rose p-4 text-sm font-medium text-jasper">
+                          {errors.service}
+                        </p>
+                      )}
                     </div>
                     <div className="">
                       <p className="mb-2.5 font-bold text-gray-01">Duration</p>
-                      <InputIcon placeholder="    "></InputIcon>
+                      <InputIcon
+                        placeholder={newAppointmentHelper.duration.label}
+                      >
+                        <div className="absolute top-[calc(100%+5px)] z-10  -ml-[14px] w-full rounded-lg bg-white shadow-lg">
+                          {[
+                            ["00:10", 10],
+                            ["00:20", 20],
+                            ["00:30", 30],
+                            ["00:40", 40],
+                            ["00:50", 50],
+                            ["01:00", 60],
+                            ["01:10", 70],
+                            ["01:20", 80],
+                            ["01:30", 90],
+                          ].map(([text, minutes], index) => {
+                            return (
+                              <StandardDropdownCell
+                                handleClick={() => {
+                                  setNewAppointmentHelper({
+                                    ...newAppointmentHelper,
+                                    duration: {
+                                      label: text.toString(),
+                                      value: minutes.toString(),
+                                    },
+                                  });
+                                }}
+                                key={index}
+                                text={text.toString()}
+                              ></StandardDropdownCell>
+                            );
+                          })}
+                        </div>
+                      </InputIcon>
+                      {errors.duration && (
+                        <p className="mt-2 rounded-md bg-misty-rose p-4 text-sm font-medium text-jasper">
+                          {errors.duration}
+                        </p>
+                      )}
                     </div>
                     <div className="">
                       <p className="mb-2.5 font-bold text-gray-01">
                         Employee 1
                       </p>
-                      <InputIcon placeholder="Select" icon="people"></InputIcon>
+                      <InputIcon
+                        optionalCss="w-[200px]"
+                        icon={
+                          newAppointmentHelper.employee1.label === null
+                            ? "people"
+                            : undefined
+                        }
+                        placeholder={newAppointmentHelper.employee1.label}
+                      >
+                        <div className="absolute top-[calc(100%+5px)] z-10  -ml-[14px] w-full rounded-lg bg-white shadow-lg">
+                          {/* Default employer label */}
+                          <div
+                            className="flex items-center px-[16px] py-[10px]"
+                            onClick={() => {
+                              setNewAppointmentHelper({
+                                ...newAppointmentHelper,
+                                employee1: {
+                                  label: "All Employees",
+                                  value: null,
+                                },
+                              });
+                            }}
+                          >
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M12.5 4C11.6759 4 10.8703 4.24694 10.1851 4.7096C9.49992 5.17226 8.96587 5.82985 8.6505 6.59923C8.33514 7.3686 8.25262 8.2152 8.41339 9.03196C8.57417 9.84872 8.971 10.599 9.55372 11.1878C10.1364 11.7767 10.8789 12.1777 11.6871 12.3401C12.4954 12.5026 13.3332 12.4192 14.0945 12.1005C14.8559 11.7819 15.5066 11.2422 15.9645 10.5498C16.4223 9.85735 16.6667 9.04329 16.6667 8.21053C16.6667 7.09383 16.2277 6.02286 15.4463 5.23323C14.6649 4.44361 13.6051 4 12.5 4ZM12.5 10.7368C12.0055 10.7368 11.5222 10.5887 11.1111 10.3111C10.7 10.0335 10.3795 9.63893 10.1903 9.17731C10.0011 8.71568 9.95157 8.20772 10.048 7.71767C10.1445 7.22761 10.3826 6.77746 10.7322 6.42415C11.0819 6.07084 11.5273 5.83023 12.0123 5.73275C12.4972 5.63527 12.9999 5.6853 13.4567 5.87652C13.9135 6.06773 14.304 6.39153 14.5787 6.80698C14.8534 7.22243 15 7.71087 15 8.21053C15 8.88055 14.7366 9.52313 14.2678 9.9969C13.7989 10.4707 13.163 10.7368 12.5 10.7368ZM20 20V19.1579C20 17.5945 19.3854 16.0952 18.2915 14.9897C17.1975 13.8842 15.7138 13.2632 14.1667 13.2632H10.8333C9.28624 13.2632 7.80251 13.8842 6.70854 14.9897C5.61458 16.0952 5 17.5945 5 19.1579V20H6.66667V19.1579C6.66667 18.0412 7.10565 16.9702 7.88705 16.1806C8.66846 15.391 9.72826 14.9474 10.8333 14.9474H14.1667C15.2717 14.9474 16.3315 15.391 17.1129 16.1806C17.8943 16.9702 18.3333 18.0412 18.3333 19.1579V20H20Z"
+                                fill="#7A7E87"
+                              />
+                            </svg>
+                            <p className="flex-1 font-medium text-gray-01">
+                              All Employees
+                            </p>
+                          </div>
+                          {users.data.map((item) => {
+                            return (
+                              <StandardDropdownCell
+                                handleClick={() => {
+                                  setNewAppointmentHelper({
+                                    ...newAppointmentHelper,
+                                    employee1: {
+                                      label: item.name.split(" ")[0],
+                                      value: item.id.toString(),
+                                    },
+                                  });
+                                }}
+                                key={item.id}
+                                text={item.name.split(" ")[0]}
+                              ></StandardDropdownCell>
+                            );
+                          })}
+                        </div>
+                      </InputIcon>
+                      {errors.employee1 && (
+                        <p className="mt-2 rounded-md bg-misty-rose p-4 text-sm font-medium text-jasper">
+                          {errors.employee1}
+                        </p>
+                      )}
                     </div>
-                    <div className="">
+                    {/* <div className="">
                       <p className="mb-2.5 font-bold text-gray-01">
                         Employee 2
                       </p>
                       <InputIcon placeholder="Select" icon="people"></InputIcon>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="mt-5 flex justify-between ">
                     <div className="flex items-center">
@@ -424,9 +722,56 @@ function Calendar() {
                   </div>
                   <div className=" flex-none">
                     <Button
-                      text="Add Resource"
+                      text="Add Service"
                       type="tertiary"
                       size="large"
+                      handleClick={() => {
+                        // console.log(newAppointmentDetails.services);
+
+                        console.log(newAppointmentHelper.service.value);
+                        vali(
+                          newAppointmentHelper.service.value,
+                          "service",
+                          "Can't be empty",
+                        );
+                        vali(
+                          newAppointmentHelper.duration.value,
+                          "duration",
+                          "Can't be empty",
+                        );
+                        vali(
+                          newAppointmentHelper.employee1.value,
+                          "employee1",
+                          "Can't be empty",
+                        );
+
+                        if (
+                          Object.values(errors).every((item) => {
+                            console.log(item);
+                            return item === null;
+                          })
+                        ) {
+                          setnewAppointmentDetails({
+                            ...newAppointmentDetails,
+                            services: [
+                              ...newAppointmentDetails.services,
+                              {
+                                details: {
+                                  duration:
+                                    newAppointmentHelper.duration.value?.toString(),
+                                  price:
+                                    newAppointmentHelper.service.price?.toString(),
+                                  name: newAppointmentHelper.service.label,
+                                },
+                                employees: [
+                                  newAppointmentHelper.employee1,
+                                  newAppointmentHelper.employee2,
+                                ],
+                              },
+                            ],
+                          });
+                        }
+                      }}
                       leftIcon="plus"
                     />
                   </div>
@@ -436,88 +781,265 @@ function Calendar() {
                   <div className="flex items-center justify-between gap-5 dirChildren:flex-auto  ">
                     <div className="">
                       <p className="mb-2.5 font-bold text-gray-01">ROOM</p>
-                      <InputIcon placeholder="Select Room"></InputIcon>
+                      <InputIcon placeholder={newAppointmentHelper.room.label}>
+                        <div className="absolute top-[calc(100%+5px)]   z-10 -ml-[14px] w-full rounded-lg bg-white shadow-lg">
+                          {rooms.data.map((item) => {
+                            return (
+                              <StandardDropdownCell
+                                handleClick={() => {
+                                  setNewAppointmentHelper({
+                                    ...newAppointmentHelper,
+                                    room: {
+                                      label: item.name,
+                                      value: item.id.toString(),
+                                    },
+                                  });
+                                }}
+                                key={item.id}
+                                text={item.name}
+                              ></StandardDropdownCell>
+                            );
+                          })}
+                        </div>
+                      </InputIcon>
                     </div>
                     <div className="">
                       <p className="mb-2.5 font-bold text-gray-01">TOOL 1</p>
-                      <InputIcon placeholder="Select tool "></InputIcon>
+                      <InputIcon placeholder={newAppointmentHelper.tool1.label}>
+                        <div className="absolute top-[calc(100%+5px)]   z-10 -ml-[14px] w-full rounded-lg bg-white shadow-lg">
+                          {tools.data
+                            .filter(
+                              (item) =>
+                                newAppointmentHelper.tool2.value !==
+                                item.id.toString(),
+                            )
+                            .map((item) => {
+                              return (
+                                <StandardDropdownCell
+                                  handleClick={() => {
+                                    setNewAppointmentHelper({
+                                      ...newAppointmentHelper,
+                                      tool1: {
+                                        label: item.name,
+                                        value: item.id.toString(),
+                                      },
+                                    });
+                                  }}
+                                  key={item.id}
+                                  text={item.name}
+                                ></StandardDropdownCell>
+                              );
+                            })}
+                        </div>
+                      </InputIcon>
                     </div>
                     <div className="">
                       <p className="mb-2.5 font-bold text-gray-01">TOOL 2</p>
-                      <InputIcon placeholder="Select tool"></InputIcon>
+                      <InputIcon placeholder={newAppointmentHelper.tool2.label}>
+                        <div className="absolute top-[calc(100%+5px)]   z-10 -ml-[14px] w-full rounded-lg bg-white shadow-lg">
+                          {tools.data
+                            .filter(
+                              (item) =>
+                                newAppointmentHelper.tool1.value !==
+                                item.id.toString(),
+                            )
+                            .map((item) => {
+                              return (
+                                <StandardDropdownCell
+                                  handleClick={() => {
+                                    setNewAppointmentHelper({
+                                      ...newAppointmentHelper,
+                                      tool2: {
+                                        label: item.name,
+                                        value: item.id.toString(),
+                                      },
+                                    });
+                                  }}
+                                  key={item.id}
+                                  text={item.name}
+                                ></StandardDropdownCell>
+                              );
+                            })}
+                        </div>
+                      </InputIcon>
                     </div>
+                  </div>
+                  <div className="mt-5 flex-none ">
+                    <Button
+                      text="Add Resource"
+                      type="tertiary"
+                      size="large"
+                      leftIcon="plus"
+                      handleClick={() => {
+                        setnewAppointmentDetails({
+                          ...newAppointmentDetails,
+                          resources: [
+                            ...newAppointmentDetails.resources,
+                            {
+                              tool1: "",
+                              tool2: "",
+                              saloonId: 1,
+                            },
+                          ],
+                        });
+                      }}
+                    />
                   </div>
                 </div>
                 {/* date section */}
                 <div className="mt-[30px] rounded-lg border border-gray-04 bg-white p-5">
                   <div className="space-y-5">
-                    <div className="">
+                    <div className="w-full">
                       <p className="mb-2.5 font-bold text-gray-01">
                         Date And Time
                       </p>
-                      <div className="flex items-center justify-between gap-5">
-                        <div className="flex-1">
-                          <InputIcon placeholder="Select"></InputIcon>
+                      <div className="flex  items-center justify-between gap-5 dirChildren:flex-1">
+                        <div
+                          className="
+                          relative flex items-center rounded-lg border border-gray-03 p-[12px] pl-[14px] "
+                        >
+                          <p className="min-h-[25px] min-w-[100px] flex-1 font-medium ">
+                            {appointmentDate?.toISOString().split("T")[0] ??
+                              " "}
+                          </p>
                         </div>
+                        <div
+                          className="
+                          relative flex items-center rounded-lg border border-gray-03 p-[12px] pl-[14px] "
+                        >
+                          <p className="min-h-[25px] min-w-[100px] flex-1 font-medium ">
+                            {appointmentTime}
+                          </p>
+                        </div>
+
                         <div className="">
-                          <Input
-                            id="date"
-                            size="small"
-                            type="text"
-                            placeholder="00:00"
+                          <StandardBtn
+                            text="Find Availabilities"
+                            handleClick={() => {
+                              setScreen2(true);
+                            }}
                           />
-                        </div>
-                        <div className="flex-1">
-                          <StandardBtn text="Find Availabilities" />
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Checkbox id="checkbox" name="checkbox" value="1" />
-                      <p className=" font-medium">Repeat Appointment</p>
+                      <Checkbox
+                        value={"repeat"}
+                        id="checkbox"
+                        handleChange={(e) => {
+                          e.currentTarget.checked === true
+                            ? setRepeatAppointment(true)
+                            : setRepeatAppointment(false);
+                          console.log(
+                            repeatAppointment,
+                            e.currentTarget.checked,
+                          );
+                        }}
+                        name="repeat"
+                        checked={repeatAppointment}
+                      />
+                      <label htmlFor="checkbox" className="font-medium">
+                        Repeat Appointment
+                      </label>
                     </div>
-                    <div className="flex items-center  gap-5  ">
-                      <div className="">
-                        <p className="mb-2.5 font-bold text-gray-01">
-                          FREQUENCY
-                        </p>
-                        <InputIcon placeholder="Select Room"></InputIcon>
-                      </div>
-                      <div className="">
-                        <p className="mb-2.5 font-bold text-gray-01">EVERY</p>
-                        <InputIcon placeholder="Fry"></InputIcon>
-                      </div>
-                      <div className="">
-                        <p className="mb-2.5 font-bold text-gray-01">ON THE</p>
-                        <InputIcon placeholder="Weekly"></InputIcon>
-                      </div>
-                    </div>
-                    <div className="flex items-center  gap-5  ">
-                      <div className="">
-                        <p className="mb-2.5 font-bold text-gray-01">ENDS</p>
-                        <InputIcon placeholder="After a number of times"></InputIcon>
-                      </div>
-                      <div className="">
-                        <p className="mb-2.5 font-bold text-gray-01">TIMES</p>
-                        <InputIcon placeholder="5"></InputIcon>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="mt-5 flex-none">
-                    <Button
-                      text="Add Service"
-                      type="tertiary"
-                      size="large"
-                      leftIcon="plus"
-                    />
+                    {repeatAppointment && (
+                      <div className="">
+                        <div className="flex items-center  gap-5  ">
+                          <div className="">
+                            <p className="mb-2.5 font-bold text-gray-01">
+                              FREQUENCY
+                            </p>
+                            <InputIcon placeholder="Select Room"></InputIcon>
+                          </div>
+                          <div className="">
+                            <p className="mb-2.5 font-bold text-gray-01">
+                              EVERY
+                            </p>
+                            <InputIcon placeholder="Fry"></InputIcon>
+                          </div>
+                          <div className="">
+                            <p className="mb-2.5 font-bold text-gray-01">
+                              ON THE
+                            </p>
+                            <InputIcon placeholder="Weekly"></InputIcon>
+                          </div>
+                        </div>
+                        <div className="flex items-center  gap-5  ">
+                          <div className="">
+                            <p className="mb-2.5 font-bold text-gray-01">
+                              ENDS
+                            </p>
+                            <InputIcon placeholder="After a number of times"></InputIcon>
+                          </div>
+                          <div className="">
+                            <p className="mb-2.5 font-bold text-gray-01">
+                              TIMES
+                            </p>
+                            <InputIcon placeholder="5"></InputIcon>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="mt-[30px] rounded-lg border border-gray-04 bg-white p-5">
                   <div className="flex items-center gap-4">
-                    <Checkbox id="checkbox" name="checkbox" value="1" />
-                    <p className="font-bold text-gray-01">ADD BUFFER TIME</p>
+                    <Checkbox
+                      id="bufferTime"
+                      name="checkbox"
+                      handleChange={() => {
+                        setBufferTime(!bufferTime);
+                        setNewAppointmentHelper({
+                          ...newAppointmentHelper,
+                          bufferTime: {
+                            label: "00:15 Min",
+                            value: "15",
+                          },
+                        });
+                      }}
+                    />
+                    <label
+                      htmlFor="bufferTime"
+                      className="font-bold text-gray-01"
+                    >
+                      ADD BUFFER TIME
+                    </label>
                   </div>
+                  {bufferTime && (
+                    <div className="mt-4 w-[200px]">
+                      <InputIcon
+                        placeholder={newAppointmentHelper.bufferTime.label}
+                      >
+                        <div className="absolute top-[calc(100%+5px)] z-10  -ml-[14px] w-full rounded-lg bg-white shadow-lg">
+                          {[
+                            ["00:05", 5],
+                            ["00:10", 10],
+                            ["00:15", 15],
+                            ["00:20", 20],
+                            ["00:25", 25],
+                            ["00:30", 30],
+                          ].map(([text, minutes], index) => {
+                            return (
+                              <StandardDropdownCell
+                                handleClick={() => {
+                                  setNewAppointmentHelper({
+                                    ...newAppointmentHelper,
+                                    bufferTime: {
+                                      label: text.toString() + " Min",
+                                      value: minutes.toString(),
+                                    },
+                                  });
+                                }}
+                                key={index}
+                                text={text.toString()}
+                              ></StandardDropdownCell>
+                            );
+                          })}
+                        </div>
+                      </InputIcon>
+                    </div>
+                  )}
                 </div>
                 <div className="mt-[30px] rounded-lg border border-gray-04 bg-white p-5">
                   <p className="font-bold text-gray-01">NOTE</p>
@@ -525,6 +1047,12 @@ function Calendar() {
                     <textarea
                       name="note"
                       id="note"
+                      onChange={(e) => {
+                        setnewAppointmentDetails({
+                          ...newAppointmentDetails,
+                          note: e.target.value,
+                        });
+                      }}
                       cols={30}
                       rows={3}
                       placeholder="Write your note here"
@@ -537,7 +1065,7 @@ function Calendar() {
               <div className=" flex basis-1/4 flex-col justify-between bg-white p-[30px]   ">
                 <div className="">
                   <div className="">
-                    <p className="mb-2.5 font-bold text-gray-01">EVERY</p>
+                    <p className="mb-2.5 font-bold text-gray-01">Customer</p>
                     <InputIcon placeholder="Search"></InputIcon>
                     <div className="mt-[30px]">
                       <Button
@@ -554,16 +1082,278 @@ function Calendar() {
                     <p className="mb-2.5 font-bold text-gray-01">
                       DATE AND TIME
                     </p>
-                    <p className="font-bold">22.08.2023, 11:00</p>
-                  </div>
-                  <div className="mt-[40px]">
-                    <p className="mb-2.5 font-bold text-gray-01">
-                      DATE AND TIME
+                    <p className="font-bold">
+                      {appointmentDate &&
+                        appointmentTime &&
+                        appointmentDate.toDateString() + ","}{" "}
+                      {appointmentTime}
                     </p>
-                    <p className="font-bold">22.08.2023, 11:00</p>
                   </div>
                   <div className="">
-                    <StandardBtn text="Save Appointment" />
+                    <p className="mb-2.5 font-bold text-gray-01">Price</p>
+                    <p className="p-1 font-bold">
+                      &euro;
+                      {(() => {
+                        let total = 0;
+                        newAppointmentDetails.services.forEach((service) => {
+                          console.log(service.details.price);
+                          if (service.details.price) {
+                            total += parseFloat(service.details.price);
+                          }
+                        });
+                        return total;
+                      })() + ",00"}
+                    </p>
+                  </div>
+                  <div className="mt-10 fcen">
+                    <StandardBtn
+                      text="Save Appointment"
+                      handleClick={() => {
+                        setScreen3(true);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </LayerScreen>
+      )}
+      {screen2 && (
+        <LayerScreen>
+          <div className="min-w-[80vw] rounded-lg   bg-gray-07">
+            <PopUpTop
+              text="Find Availabilities"
+              xHandleClick={() => {
+                setScreen2(false);
+              }}
+            ></PopUpTop>
+            <div className="relative flex  ">
+              {/* left */}
+              <div className="sticky left-0 top-0 max-h-[calc(80vh)] basis-1/4  overflow-auto p-[30px]">
+                <DatePickerCalendar
+                  dayFuncton={(s) => {
+                    setappointmentDate(s);
+
+                    const correctDay = addDays(s, 1);
+
+                    setnewAppointmentDetails({
+                      ...newAppointmentDetails,
+                      date:
+                        correctDay.toISOString().split("T")[0] +
+                        "T" +
+                        appointmentTime +
+                        ":00.000Z",
+                    });
+                    console.log(
+                      "%c DATE",
+                      "background: yellow",
+                      addDays(s, 1),
+                      addDays,
+                      appointmentDate?.toISOString(),
+                    );
+                  }}
+                />
+              </div>
+              {/* right */}
+              <div className=" basis-3/4   bg-white p-[30px]   ">
+                <div className="">
+                  <p className="text-lg font-bold">Morning</p>
+                  <div className="mt-5 grid grid-cols-6 gap-4">
+                    {[
+                      "09:00",
+                      "09:15",
+                      "09:30",
+                      "09:45",
+                      "10:00",
+                      "10:15",
+                      "10:30",
+                      "10:45",
+                      "11:00",
+                      "11:15",
+                      "11:30",
+                      "11:45",
+                    ].map((item, i) => {
+                      return (
+                        <StandardBtn
+                          key={i}
+                          selected={appointmentTime === item}
+                          handleClick={() => {
+                            setAppointmentTime(item);
+                          }}
+                          text={item}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="mt-[30px]">
+                  <p className="text-lg font-bold">Afternoon</p>
+                  <div className="mt-5 grid grid-cols-6 gap-4">
+                    {[
+                      "12:00",
+                      "12:15",
+                      "12:30",
+                      "12:45",
+                      "13:00",
+                      "13:15",
+                      "13:30",
+                      "13:45",
+                      "14:00",
+                      "14:15",
+                      "14:30",
+                      "14:45",
+                    ].map((item, i) => {
+                      return (
+                        <StandardBtn
+                          key={i}
+                          selected={appointmentTime === item}
+                          handleClick={() => {
+                            setAppointmentTime(item);
+                          }}
+                          text={item}
+                        />
+                      );
+                    })}
+                  </div>
+                  <div className="ml-auto mt-6 w-3/12 justify-end">
+                    <Button
+                      size="large"
+                      text="Choose Time"
+                      type="primary"
+                      handleClick={() => {
+                        setScreen2(false);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </LayerScreen>
+      )}
+      {screen3 && (
+        <LayerScreen>
+          <div className="z-100 min-w-[80vw] rounded-lg bg-gray-07">
+            <PopUpTop
+              text="Appointment Details"
+              xHandleClick={() => {
+                setScreen3(false);
+              }}
+            ></PopUpTop>
+            <div className="relative flex  ">
+              {/* left */}
+              <div className="sticky left-0 top-0 max-h-[calc(80vh)] basis-3/4  space-y-10 overflow-auto p-[30px]">
+                <div className="">
+                  <div className="flex gap-4">
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">DATE</p>
+                      <p className="font-bold">
+                        {appointmentDate?.toISOString().split("T")[0]}
+                      </p>
+                    </div>
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">TIME</p>
+                      <p className="font-bold">
+                        <span>{appointmentTime} - </span>
+                        <span>
+                          {(() => {
+                            const newDate = new Date();
+                            const hours = appointmentTime.split(":")[0];
+                            const minutes = appointmentTime.split(":")[1];
+                            newDate.setHours(parseInt(hours));
+                            newDate.setMinutes(parseInt(minutes));
+
+                            let total = 0;
+                            newAppointmentDetails.services.forEach(
+                              (service) => {
+                                if (service.details.duration) {
+                                  total += parseInt(service.details.duration);
+                                }
+                              },
+                            );
+                            const combinedDate = addMinutes(newDate, total);
+
+                            return `${format(combinedDate, "HH")}:${format(
+                              combinedDate,
+                              "mm",
+                            )}`;
+                          })()}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="">
+                      <p className="mb-2.5 font-bold text-gray-01">
+                        TOTAL PRICE
+                      </p>
+                      <p className="p-1 font-bold">
+                        &euro;
+                        {(() => {
+                          let total = 0;
+                          newAppointmentDetails.services.forEach((service) => {
+                            console.log(service.details.price);
+                            if (service.details.price) {
+                              total += parseFloat(service.details.price);
+                            }
+                          });
+                          return total;
+                        })() + ",00"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="">
+                  <div className="">
+                    <p className="text-lg font-bold ">Services</p>
+                  </div>
+                  <div className="mt-4 rounded-lg border border-gray-04 bg-white"></div>
+                </div>
+
+                <div className="">
+                  <div className="">
+                    <p className="text-lg font-bold ">Warning</p>
+                  </div>
+                  <div className="mt-4 rounded-lg border border-gray-04 bg-white"></div>
+                </div>
+
+                <div className="">
+                  <div className="">
+                    <p className="text-lg font-bold ">History</p>
+                  </div>
+                  <div className="mt-4 rounded-lg border border-gray-04 bg-white "></div>
+                </div>
+              </div>
+              {/* right */}
+              <div className=" flex basis-1/4 flex-col justify-between bg-white p-[30px]   ">
+                <div className=""></div>
+                <div className="space-y-5">
+                  <div className="flex ">
+                    <StandardBtn
+                      optional="flex-1"
+                      text="Edit"
+                      handleClick={() => {
+                        setScreen3(false);
+                      }}
+                    />
+                  </div>
+                  <div className=" fcen">
+                    <Button
+                      optinal="flex-1"
+                      text="Checkout"
+                      size="large"
+                      type="primary"
+                      handleClick={async () => {
+                        const res = await axios.post(
+                          "/api/appointments",
+                          newAppointmentDetails,
+                        );
+                        if (res.data) {
+                        } else {
+                          console.log("error json");
+                        }
+                      }}
+                    />
                   </div>
                 </div>
               </div>

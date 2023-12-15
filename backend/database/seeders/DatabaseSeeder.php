@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             ToolSeeder::class,
             AppointmentSeeder::class,
+            ProductCategorySeeder::class,
             ProductSeeder::class,
             ResourceSeeder::class,
             RoomSeeder::class,

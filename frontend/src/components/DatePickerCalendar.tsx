@@ -13,8 +13,11 @@ import {
 } from "date-fns";
 import { useState } from "react";
 import { capitalizeFirstLetter } from "./../helpers/functions";
-
-function DatePickerCalendar() {
+type Props = {
+  children?: React.ReactNode;
+  dayFuncton?: (e: Date) => void;
+};
+function DatePickerCalendar({ dayFuncton, children }: Props) {
   const today = startOfToday();
   const days = ["s", "m", "t", "w", "t", "f", "s"];
   const colStartClasses = [
@@ -27,6 +30,7 @@ function DatePickerCalendar() {
     "col-start-7",
   ];
 
+  const [selected, setSelected] = useState("");
   const [currMonth, setCurrMonth] = useState(() => format(today, "MMM-yyyy"));
   const firstDayOfMonth = parse(currMonth, "MMM-yyyy", new Date());
 
@@ -99,10 +103,16 @@ function DatePickerCalendar() {
             return (
               <div key={idx} className={colStartClasses[getDay(day)]}>
                 <p
-                  className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full font-semibold  hover:text-white ${
+                  onClick={() => {
+                    dayFuncton && dayFuncton(day);
+                    setSelected(day.toString());
+                  }}
+                  className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full font-semibold  hover:text-gray-02 ${
                     isSameMonth(day, today) ? "text-black" : "text-gray-02"
                   } ${!isToday(day) && "hover:bg-blue-500"} ${
-                    isToday(day) && "bg-denum text-white"
+                    isToday(day) && "bg-mountbatten-pink text-white"
+                  }  ${
+                    selected === day.toString() ? "bg-denum text-white" : ""
                   }`}
                 >
                   {format(day, "d")}

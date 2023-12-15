@@ -11,6 +11,7 @@ type UserProps = {
   role: string;
   created_at: string;
   updated_at: string;
+  salon_id: number;
 };
 
 // type SettingsProps = {

@@ -4,7 +4,6 @@ function Sidebar() {
   const match = useMatches();
 
   const loc = useLocation();
-  console.log(loc.pathname);
 
   return (
     <div className="flex flex-none flex-col   gap-[5px] bg-denum p-[5px] ">

@@ -18,6 +18,7 @@ import PopUpBottom from "../components/navigation/PopUpBottom";
 export type ProductDetails = {
   id: number;
   name: string;
+  productCategory: string;
   price: number;
   stock: number;
 };
@@ -142,7 +143,9 @@ function Products() {
                             <td className="p-5 font-medium capitalize">
                               {products.name}
                             </td>
-                            <td className="p-5 font-medium">monkey</td>
+                            <td className="p-5 font-medium">
+                              {products.productCategory}
+                            </td>
                             <td className="p-5 font-medium">
                               <span>&euro;</span>
                               {products.price}

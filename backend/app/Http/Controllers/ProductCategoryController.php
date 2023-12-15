@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductCollection;
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class ProductCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return new ProductCollection(Product::with('productCategory')->paginate(20));
+        //
     }
 
     /**
@@ -22,19 +20,21 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(ProductCategory $productCategory)
     {
+        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, ProductCategory $productCategory)
     {
         //
     }
@@ -42,7 +42,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(ProductCategory $productCategory)
     {
         //
     }

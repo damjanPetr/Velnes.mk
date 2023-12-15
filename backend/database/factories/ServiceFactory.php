@@ -20,7 +20,7 @@ class ServiceFactory extends Factory
     {
         $appointment = Appointment::all()->random();
         return [
-            'name' => fake()->word() . fake()->randomElement(["Haircut", "Shaving", "Massage", "Manicure", "Pedicure", 'Treatment', 'Cleaning']),
+            'name' => fake()->word() . ' ' . fake()->randomElement(["Haircut", "Shaving", "Massage", "Manicure", "Pedicure", 'Treatment', 'Cleaning']),
             'appointment_id' => $appointment->id,
             'price' => fake()->numberBetween(10, 100),
             'saloon_id' => $appointment->saloon_id,
