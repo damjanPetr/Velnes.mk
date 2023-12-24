@@ -47,6 +47,7 @@ export type resourcesProps = {
   tool1: string;
   tool2: string;
   saloonId: number;
+  room: string;
   createdAt: string;
   updatedAt: string;
 };

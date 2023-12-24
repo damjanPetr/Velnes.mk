@@ -1,4 +1,4 @@
-import { addDays, addMinutes, format, getHours } from "date-fns";
+import { addDays, addMinutes, format } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import DatePickerCalendar from "../components/DatePickerCalendar";
@@ -8,6 +8,7 @@ import Checkbox from "../components/buttons/Checkbox";
 import StandardBtn from "../components/buttons/StandardBtn";
 import StandardDropdownCell from "../components/dropdown/StandardDropdownCell";
 import InputIcon from "../components/inputs/InputIcon";
+import AppointmentDetail from "../components/lists/simple/AppointmentDetail";
 import Service from "../components/lists/simple/Service";
 import Header from "../components/navigation/Header";
 import PopUpTop from "../components/navigation/PopUpTop";
@@ -21,7 +22,7 @@ import {
   toolsProps,
   userProps,
 } from "../router";
-import { calcTime } from "../helpers/functions";
+import { Customer, CustomersLoader } from "./Customers";
 
 export type CalendarProps = {
   children?: React.ReactNode;
@@ -57,12 +58,17 @@ export async function roomsLoader() {
 }
 
 function Calendar() {
+  const [customers, setCustomers] = useState<Customer[] | null>(null);
   const { user } = useAuth();
   const [newAppointmentHelper, setNewAppointmentHelper] = useState<{
     [key: string]: { label: string; value: string | null; price?: string };
   }>({
     service: {
       label: "Select Service",
+      value: null,
+    },
+    customer: {
+      label: "",
       value: null,
     },
     duration: {
@@ -138,6 +144,7 @@ function Calendar() {
   }>({ value: "week", label: "Week" });
   type newDetailProps = {
     note: string | null;
+    customer: string | null;
     saloonId: number | undefined;
     date: string;
     services: {
@@ -148,23 +155,18 @@ function Calendar() {
       };
       employees: { label: string; value: string | null }[];
     }[];
-    resources: Pick<resourcesProps, "tool1" | "tool2" | "saloonId">[];
+    resources: Pick<resourcesProps, "tool1" | "tool2" | "saloonId" | "room">[];
     bufferTime: string | null;
-    // room: string | null;
-    // tool1: string | null;
-    // tool2: string | null;
   };
   const [newAppointmentDetails, setnewAppointmentDetails] =
     useState<newDetailProps>({
       note: null,
       saloonId: user?.salon_id,
       date: "",
+      customer: "",
       services: [],
       resources: [],
       bufferTime: newAppointmentHelper.bufferTime.value,
-      // room: newAppointmentHelper.room.value,
-      // tool1: newAppointmentHelper.tool1.value,
-      // tool2: newAppointmentHelper.tool2.value,
     });
   const [repeatAppointment, setRepeatAppointment] = useState<boolean>(false);
   const [bufferTime, setBufferTime] = useState<boolean>(false);
@@ -198,7 +200,7 @@ function Calendar() {
   });
 
   function vali(s: string | null, field: string, message: string) {
-    console.log(s, s == null);
+    // console.log(s, s == null);
     if (s === null) {
       setErrors({
         ...errors,
@@ -211,20 +213,27 @@ function Calendar() {
         [field]: null,
       });
     }
-    console.log(s, field, message, errors);
+    // console.log(s, field, message, errors);
   }
 
+  useEffect(() => {
+    CustomersLoader().then((res) => {
+      setCustomers(res.data);
+    });
+  }, []);
   useEffect(() => {
     if (prevMyStateRef.current !== newAppointmentHelper) {
       setnewAppointmentDetails({
         ...newAppointmentDetails,
         bufferTime: newAppointmentHelper.bufferTime.value,
+        customer: newAppointmentHelper.customer.value,
         // room: newAppointmentHelper.room.value,
         // tool1: newAppointmentHelper.tool1.value,
         // tool2: newAppointmentHelper.tool2.value,
       });
       prevMyStateRef.current = newAppointmentHelper as unknown;
     }
+    console.log(newAppointmentDetails);
   }, [newAppointmentHelper, newAppointmentDetails]);
 
   return (
@@ -747,7 +756,6 @@ function Calendar() {
 
                         if (
                           Object.values(errors).every((item) => {
-                            console.log(item);
                             return item === null;
                           })
                         ) {
@@ -876,8 +884,9 @@ function Calendar() {
                           resources: [
                             ...newAppointmentDetails.resources,
                             {
-                              tool1: "",
-                              tool2: "",
+                              tool1: newAppointmentHelper.tool1.value!,
+                              tool2: newAppointmentHelper.tool2.value!,
+                              room: newAppointmentHelper.room.label,
                               saloonId: 1,
                             },
                           ],
@@ -1066,7 +1075,31 @@ function Calendar() {
                 <div className="">
                   <div className="">
                     <p className="mb-2.5 font-bold text-gray-01">Customer</p>
-                    <InputIcon placeholder="Search"></InputIcon>
+                    <InputIcon
+                      placeholder={newAppointmentHelper.customer.label}
+                    >
+                      <div className="absolute right-0 top-[calc(100%+5px)] z-10 -ml-[14px] max-h-[300px]    min-w-[300px] overflow-auto rounded-lg bg-white shadow-lg">
+                        {customers &&
+                          customers.map((customer, index) => {
+                            return (
+                              <AppointmentDetail
+                                handleClick={() => {
+                                  setNewAppointmentHelper({
+                                    ...newAppointmentHelper,
+                                    customer: {
+                                      label: customer.firstName,
+                                      value: customer.id.toString(),
+                                    },
+                                  });
+                                }}
+                                customer={customer}
+                                key={index}
+                              />
+                            );
+                          })}
+                      </div>
+                    </InputIcon>
+
                     <div className="mt-[30px]">
                       <Button
                         leftIcon="plus"
@@ -1096,7 +1129,6 @@ function Calendar() {
                       {(() => {
                         let total = 0;
                         newAppointmentDetails.services.forEach((service) => {
-                          console.log(service.details.price);
                           if (service.details.price) {
                             total += parseFloat(service.details.price);
                           }
@@ -1307,26 +1339,79 @@ function Calendar() {
                   <div className="">
                     <p className="text-lg font-bold ">Services</p>
                   </div>
-                  <div className="mt-4 rounded-lg border border-gray-04 bg-white"></div>
+                  <div className="mt-4 rounded-lg border border-gray-04 bg-white">
+                    <div className=" w-full rounded-lg bg-white ">
+                      <div className="flex items-center justify-between p-5">
+                        <p className=" font-bold">SERVICE</p>
+                        <p className=" font-bold">DURATION</p>
+                        <p className=" font-bold">EMPLOYEE</p>
+                      </div>
+
+                      {newAppointmentDetails.services.map((item, i) => {
+                        return (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between border-t border-gray-04 p-5"
+                          >
+                            <p className="">{item.details.name}</p>
+                            <p className="min-w-[90px]">
+                              {item.details.duration}
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M12.5 4C11.6759 4 10.8703 4.24694 10.1851 4.7096C9.49992 5.17226 8.96587 5.82985 8.6505 6.59923C8.33514 7.3686 8.25262 8.2152 8.41339 9.03196C8.57417 9.84872 8.971 10.599 9.55372 11.1878C10.1364 11.7767 10.8789 12.1777 11.6871 12.3401C12.4954 12.5026 13.3332 12.4192 14.0945 12.1005C14.8559 11.7819 15.5066 11.2422 15.9645 10.5498C16.4223 9.85735 16.6667 9.04329 16.6667 8.21053C16.6667 7.09383 16.2277 6.02286 15.4463 5.23323C14.6649 4.44361 13.6051 4 12.5 4ZM12.5 10.7368C12.0055 10.7368 11.5222 10.5887 11.1111 10.3111C10.7 10.0335 10.3795 9.63893 10.1903 9.17731C10.0011 8.71568 9.95157 8.20772 10.048 7.71767C10.1445 7.22761 10.3826 6.77746 10.7322 6.42415C11.0819 6.07084 11.5273 5.83023 12.0123 5.73275C12.4972 5.63527 12.9999 5.6853 13.4567 5.87652C13.9135 6.06773 14.304 6.39153 14.5787 6.80698C14.8534 7.22243 15 7.71087 15 8.21053C15 8.88055 14.7366 9.52313 14.2678 9.9969C13.7989 10.4707 13.163 10.7368 12.5 10.7368ZM20 20V19.1579C20 17.5945 19.3854 16.0952 18.2915 14.9897C17.1975 13.8842 15.7138 13.2632 14.1667 13.2632H10.8333C9.28624 13.2632 7.80251 13.8842 6.70854 14.9897C5.61458 16.0952 5 17.5945 5 19.1579V20H6.66667V19.1579C6.66667 18.0412 7.10565 16.9702 7.88705 16.1806C8.66846 15.391 9.72826 14.9474 10.8333 14.9474H14.1667C15.2717 14.9474 16.3315 15.391 17.1129 16.1806C17.8943 16.9702 18.3333 18.0412 18.3333 19.1579V20H20Z"
+                                  fill="#7A7E87"
+                                />
+                              </svg>
+                              <p className="">{item.employees[0].label}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="">
                   <div className="">
                     <p className="text-lg font-bold ">Warning</p>
                   </div>
-                  <div className="mt-4 rounded-lg border border-gray-04 bg-white"></div>
+                  <div className="mt-4 rounded-lg border border-gray-04 bg-white">
+                    {newAppointmentDetails.note && (
+                      <p className="p-5">
+                        {newAppointmentDetails.note ?? "There are no notes"}
+                      </p>
+                    )}
+                  </div>
                 </div>
-
-                <div className="">
+                {/* <div className="">
                   <div className="">
                     <p className="text-lg font-bold ">History</p>
                   </div>
                   <div className="mt-4 rounded-lg border border-gray-04 bg-white "></div>
-                </div>
+                </div> */}
               </div>
               {/* right */}
               <div className=" flex basis-1/4 flex-col justify-between bg-white p-[30px]   ">
-                <div className=""></div>
+                <div className="">
+                  {(() => {
+                    const customer = customers?.find((item) => {
+                      return (
+                        item.id.toString() === newAppointmentDetails.customer
+                      );
+                    });
+                    if (customer) {
+                      return <AppointmentDetail customer={customer} />;
+                    }
+                  })()}
+                </div>
                 <div className="space-y-5">
                   <div className="flex ">
                     <StandardBtn
@@ -1348,6 +1433,7 @@ function Calendar() {
                           "/api/appointments",
                           newAppointmentDetails,
                         );
+                        console.log(res.data);
                         if (res.data) {
                         } else {
                           console.log("error json");

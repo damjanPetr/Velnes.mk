@@ -1,4 +1,3 @@
-import { formatDuration, format } from "date-fns";
 export const capitalizeFirstLetter = (query: string): string => {
   return query.charAt(0).toUpperCase() + query.substring(1);
 };
@@ -25,10 +24,20 @@ export function minutesToHours(minutes: number) {
   return `Converted Duration: ${formattedDuration}`;
 }
 
-const newDate = new Date();
-newDate.setHours(4, 30, 0, 0);
+export function getRandomColor() {
+  // Generate random values for red, green, and blue components
+  const randomRed = Math.floor(Math.random() * 256)
+    .toString(16)
+    .padStart(2, "0");
+  const randomGreen = Math.floor(Math.random() * 256)
+    .toString(16)
+    .padStart(2, "0");
+  const randomBlue = Math.floor(Math.random() * 256)
+    .toString(16)
+    .padStart(2, "0");
 
-// Format hours with leading zeros
-const formattedHours = format(newDate, "HH");
+  // Combine the components into a hexadecimal color code
+  const randomColor = `#${randomRed}${randomGreen}${randomBlue}`;
 
-console.log("Formatted Hours:", formattedHours);
+  return randomColor;
+}

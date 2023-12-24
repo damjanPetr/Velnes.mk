@@ -25,6 +25,5 @@ class AppointmentResource extends JsonResource
             'updatedAt' => $this->updated_at
         ];
 
-        // return parent::toArray($request);
     }
 }

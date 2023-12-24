@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
 use App\Models\Saloon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,6 +20,7 @@ class AppointmentFactory extends Factory
     {
         return [
             'date' => fake()->date(),
+            'customer_id' => Customer::all()->random()->id,
             'saloon_id' => Saloon::all()->random()->id
         ];
     }

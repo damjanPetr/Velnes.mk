@@ -10,13 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('resources', function (Blueprint $table) {
+        Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->string("room");
-            $table->string("tool_1");
-            $table->string("tool_2");
-            $table->foreignId('appointment_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('saloon_id')->constrained()->cascadeOnDelete();
+            $table->string('date');
+            $table->string('buffer_time')->nullable();
+            $table->foreignId('saloon_id')->constrained();
+            $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('resources');
+        Schema::dropIfExists('appointments');
     }
 };

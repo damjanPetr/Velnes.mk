@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Resource extends Model
 {
+
     protected $fillable = [
         'room',
         'tool_2',
