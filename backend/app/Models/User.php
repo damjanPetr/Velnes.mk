@@ -42,4 +42,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function saloon()
+    {
+        return $this->belongsTo(Saloon::class);
+    }
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'service_user', 'user_id', 'service_id');
+    }
 }
+
